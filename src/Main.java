@@ -2,7 +2,7 @@ import java.util.Scanner;
 
 public class Main {
     public static void main(String[] args) {
-        Playlist playlist = new Playlist();
+        AdvancedPlaylist playlist = new AdvancedPlaylist("My Favorite Songs"); // Создаем объект производного класса с именем плейлиста
         User user = new User(playlist);
         Volume volume = new Volume();
 
@@ -21,6 +21,8 @@ public class Main {
             System.out.println("6. Удалить трек");
             System.out.println("7. Просмотреть треки в плейлисте");
             System.out.println("8. Выход");
+            System.out.println("9. Переименовать плейлист");
+            System.out.println("10. Воспроизвести конкретный трек");
             System.out.print("Действие: ");
             choice = scanner.nextInt();
             scanner.nextLine(); // Очищаем буфер ввода
@@ -42,14 +44,14 @@ public class Main {
                     volume.changeVolume(newVolume);
                     break;
                 }
-                case 2:
+                case 2: {
                     if (playlist.getTotalNumberOfTracks() > 0) {
-                        Playback playback = new Playback(playlist, playlist.getCurrentTrack());
-                        playback.playSong();
+                        playlist.playSong(); // Вызов переопределенной виртуальной функции
                     } else {
                         System.out.println("Нет треков в плейлисте");
                     }
                     break;
+                }
                 case 3:
                     if (playlist.getTotalNumberOfTracks() > 0) {
                         Pause pause = new Pause(playlist);
@@ -99,8 +101,23 @@ public class Main {
                     }
                     break;
                 case 8:
-                    scanner.close(); // Закрываем сканер перед выходом
+                    scanner.close();
                     return;
+                case 9: {
+                    String newName;
+                    System.out.print("Введите новое имя плейлиста: ");
+                    newName = scanner.nextLine();
+                    playlist.setName(newName);
+                    System.out.println("Имя плейлиста изменено на: " + playlist.getName());
+                    break;
+                }
+                case 10: {
+                    int index;
+                    System.out.print("Введите индекс трека для воспроизведения: ");
+                    index = scanner.nextInt();
+                    playlist.playSpecificSong(index - 1);
+                    break;
+                }
                 default:
                     System.out.println("Ошибка выбора действия");
             }
