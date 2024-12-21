@@ -1,18 +1,45 @@
 import java.io.*;
 import java.util.ArrayList;
+import java.util.List;
 
-public class Playlist {
-    private ArrayList<Track> tracks; // Работа с массивом объектов (ArrayList)
-    private int currentTrack;
-    private static int instanceCount = 0; // Статическое поле для отслеживания количества экземпляров
+public class Playlist implements Cloneable {
+    protected List<Track> tracks; // protected для доступа из производных классов
+    protected int currentTrack;
+    private static int instanceCount = 0;
 
     public Playlist() {
         tracks = new ArrayList<>();
         currentTrack = 0;
-        instanceCount++; // Увеличиваем счетчик при создании нового экземпляра
+        instanceCount++;
     }
 
-    public static int getInstanceCount() { // Статический метод для получения количества экземпляров
+    // Конструктор копирования
+    public Playlist(Playlist other) {
+        this.tracks = new ArrayList<>(other.tracks);
+        this.currentTrack = other.currentTrack;
+        instanceCount++;
+    }
+
+    @Override
+    public Playlist clone() {
+        try {
+            Playlist cloned = (Playlist) super.clone();
+            cloned.tracks = new ArrayList<>(this.tracks); // Глубокое клонирование
+            return cloned;
+        } catch (CloneNotSupportedException e) {
+            throw new AssertionError("Unexpected clone error", e);
+        }
+    }
+
+    public Playlist shallowClone() {
+        try {
+            return (Playlist) super.clone(); // Мелкое клонирование
+        } catch (CloneNotSupportedException e) {
+            throw new AssertionError("Unexpected clone error", e);
+        }
+    }
+
+    public static int getInstanceCount() {
         return instanceCount;
     }
 
@@ -36,7 +63,7 @@ public class Playlist {
         return tracks.size();
     }
 
-    public ArrayList<Track> getTracks() {
+    public List<Track> getTracks() {
         return tracks;
     }
 
@@ -45,19 +72,18 @@ public class Playlist {
     }
 
     public void setCurrentTrack(int currentTrack) {
-        this.currentTrack = currentTrack; // Разумное использование оператора this
+        this.currentTrack = currentTrack;
     }
 
     public void loadTracksFromFile(String filename) {
         File file = new File(filename);
         if (!file.exists()) {
             try {
-                file.createNewFile(); // Создаем новый файл, если он не существует
-                System.out.println("Файл " + filename + " был создан."); // Сообщение о создании файла
+                file.createNewFile();
             } catch (IOException e) {
                 System.err.println("Ошибка при создании файла: " + e.getMessage());
             }
-            return; // Выходим из метода, так как файл пуст
+            return;
         }
 
         try (BufferedReader br = new BufferedReader(new FileReader(file))) {
@@ -77,7 +103,15 @@ public class Playlist {
                 bw.newLine();
             }
         } catch (IOException e) {
-            System.err.println("Ошибка при сохранении треков: " + e.getMessage()); // Перехват исключений
+            System.err.println("Ошибка при сохранении треков: " + e.getMessage());
+        }
+    }
+
+    public void playSong() {
+        if (!tracks.isEmpty()) {
+            System.out.println("Сейчас играет: " + tracks.get(currentTrack).getTitle());
+        } else {
+            System.out.println("Плейлист пуст.");
         }
     }
 }
