@@ -1,4 +1,4 @@
-public class Track {
+public class Track implements Playable {
     private String title;
 
     public Track() {}
@@ -13,5 +13,10 @@ public class Track {
 
     public void setTitle(String title) {
         this.title = title;
+    }
+
+    @Override
+    public void play() {
+        System.out.println("Играет трек: " + title);
     }
 }
